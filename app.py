@@ -22,6 +22,7 @@ for origin in [os.getenv("APP_URL"), os.getenv("RENDER_EXTERNAL_URL")]:
 
 
 def identity():
+    # Gets the authenticated user’s database ID and current conversation ID
     user = cl.user_session.get("user")
     if user is None:
         raise PermissionError("Sign in to continue")

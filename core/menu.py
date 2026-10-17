@@ -122,11 +122,6 @@ class Menu:
             eligible.sort(key=lambda i: (-self.score(i, profile or []), i.price, i.id))
         return eligible[: f.limit]
 
-    def get(self, ids: list[int], active: Constraints) -> list[MenuItem]:
-        return [
-            self.by_id[i] for i in ids if i in self.by_id and self.eligible(self.by_id[i], active)
-        ]
-
     def validate_selection(self, ids: list[int], active: Constraints, seen: set[int]):
         if len(set(ids)) != len(ids):
             raise ValueError("Duplicate selections")
