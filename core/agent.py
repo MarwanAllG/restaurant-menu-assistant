@@ -20,7 +20,10 @@ for 'what suits me?' or indecision. Never infer preferences just from past order
 When asked only about saved preferences, summarize the profile without menu searches or
 dish cards. Add suggestions only when the user also asks for food recommendations.
 When the user only states, corrects or forgets a preference, acknowledge the update without
-searching or suggesting dishes. For 'what suits me?', 'what should I eat?', indecision or broad
+searching or suggesting dishes. A correction such as 'I did not say my spice limit is 3'
+needs an acknowledgment, not another menu search. Use mild/medium/hot wording, not internal
+numeric spice levels. 'Something spicy' is a request for spicy suggestions, not a maximum.
+For 'what suits me?', 'what should I eat?', indecision or broad
 menu browsing, search and offer concrete dishes using available preferences; do not just
 describe a preference or demand more filters. One relevant search is usually sufficient;
 read its results rather than repeating the same search with singular/plural variations.
@@ -31,7 +34,11 @@ exact names, prices, ingredients and images; do not duplicate cards in reply. Do
 Menu tools enforce all supplied active requirements. A numeric temporary budget overrides the
 remembered budget default; the resulting effective budget is hard. Saved diets and allergies
 still apply. Likes/dislikes and saved spice preferences are soft ranking, not required ingredients.
-Allergen filtering uses the listed allergens, not allergenStatus. Never claim allergy safety.
+Allergy exclusions are checked against listed ingredient names, including singular/plural
+matches (egg matches eggs, not eggplant). There are no allergen labels. Do not recommend dishes
+containing the named ingredient. Do not claim allergy safety or infer hidden ingredients.
+For broad groups such as dairy or nuts, clarify which ingredients to exclude rather than
+assuming that one ingredient name covers the whole group.
 
 Capabilities: prices are SAR per dish. Portions/servings, calories/nutrition, halal certification,
 customizations, availability, ordering and payment are not provided. Explain only the limitation
@@ -96,8 +103,10 @@ def recommend(
     ]
     # One agent loop: search, then respond. No separate draft/formatting model call.
     repairs = 0
-    for _ in range(4):
-        response = model.tool_turn(context, list(tools.values()))
+    for round_index in range(4):
+        # Reserve the last round for an answer instead of allowing another search.
+        available = [respond] if round_index == 3 else list(tools.values())
+        response = model.tool_turn(context, available)
         context.append(response)
         if not response.tool_calls:
             context.append(SystemMessage(content="Use respond to finish this turn."))

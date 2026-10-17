@@ -27,9 +27,6 @@ class MenuItem(BaseModel):
     price: float | int = Field(gt=0)
     currency: Literal["SAR"]
     dietary: Dietary
-    allergens: list[str]
-    # Retained for compatibility with the source file; not used for filtering or display.
-    allergenStatus: str | None = None
     spiceLevel: int = Field(ge=0, le=3)
 
     @model_validator(mode="after")
@@ -63,8 +60,6 @@ class Menu:
     def eligible(item: MenuItem, c: Constraints) -> bool:
         if c.unsupported:
             return False
-        if any(contains(x, a) or contains(a, x) for x in c.allergens for a in item.allergens):
-            return False
         if c.category and terms(c.category) != terms(item.category):
             return False
         if c.cuisine and normalize(c.cuisine) != normalize(item.cuisine):
@@ -81,7 +76,7 @@ class Menu:
             return False
         if any(
             contains(x, ingredient)
-            for x in c.excluded_ingredients
+            for x in [*c.excluded_ingredients, *c.allergens]
             for ingredient in item.ingredients
         ):
             return False

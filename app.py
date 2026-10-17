@@ -31,10 +31,6 @@ def identity():
     return record["id"], cl.context.session.thread_id
 
 
-def memory_action():
-    return cl.Action(name="remembered_preferences", label="Remembered preferences", payload={})
-
-
 @cl.data_layer
 def data_layer():
     return CheckpointDataLayer(assistant)
@@ -50,18 +46,17 @@ async def login(username: str, password: str):
 
 @cl.on_chat_start
 async def start():
-    cl.user_session.set("preferences_message", None)
+    await cl.send_window_message({"type": "preferences:reset"})
     uid, tid = identity()
     assistant.new_conversation(uid, tid)
     await cl.Message(
         content="Welcome to **Marwan's Resturant**. Tell me what sounds good, and I’ll help you explore the menu.",
-        actions=[memory_action()],
     ).send()
 
 
 @cl.on_chat_resume
 async def resume(thread):
-    cl.user_session.set("preferences_message", None)
+    await cl.send_window_message({"type": "preferences:reset"})
     uid, tid = identity()
     assistant.repo.owned(thread["id"], uid)
     if thread["id"] != tid:
@@ -77,7 +72,7 @@ async def on_message(message: cl.Message):
         return
     try:
         result = await cl.make_async(assistant.turn)(uid, tid, message.content, message.id)
-        await cl.Message(content=result["response"], actions=[memory_action()]).send()
+        await cl.Message(content=result["response"]).send()
     except (ValueError, PermissionError) as exc:
         await cl.Message(content=str(exc)).send()
     except Exception as exc:  # noqa: BLE001 - keep UI responsive; log only exception type
@@ -88,18 +83,32 @@ async def on_message(message: cl.Message):
         ).send()
 
 
-@cl.action_callback("remembered_preferences")
-async def show_memory(action):
+async def preferences_content():
     uid, tid = identity()
     state = await cl.make_async(assistant.state)(uid, tid)
-    content = memory_view(
+    return memory_view(
         assistant.repo.profile(uid), Constraints.model_validate(state.get("temporary", {}))
     )
-    message = cl.user_session.get("preferences_message")
-    if message is None:
-        message = cl.Message(content=content)
-        cl.user_session.set("preferences_message", message)
-        await message.send()
-    else:
-        message.content = content
-        await message.update()
+
+
+async def show_memory(action):
+    await cl.send_window_message(
+        {"type": "preferences:show", "content": await preferences_content()}
+    )
+
+
+@cl.on_window_message
+async def preferences_window_message(data):
+    if not isinstance(data, dict) or data.get("type") != "preferences:request":
+        return
+    request_id = data.get("requestId")
+    if not isinstance(request_id, str) or len(request_id) > 100:
+        return
+    try:
+        content = await preferences_content()
+    except Exception as exc:  # noqa: BLE001 - keep the panel responsive without leaking details
+        logging.getLogger(__name__).error("Preferences failed: %s", type(exc).__name__)
+        content = "Couldn’t load your preferences. Please try again."
+    await cl.send_window_message(
+        {"type": "preferences:response", "requestId": request_id, "content": content}
+    )

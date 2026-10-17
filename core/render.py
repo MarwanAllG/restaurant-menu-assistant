@@ -5,7 +5,7 @@ import re
 from core.menu import Menu, contains
 from core.schemas import AssistantResponse, Constraints
 
-ALLERGEN_QUALIFICATION = "Filtered using listed allergens"
+INGREDIENT_QUALIFICATION = "Filtered using listed ingredients"
 
 
 def escape(text: str) -> str:
@@ -58,11 +58,10 @@ def render(
             f"![{escape(item.name)}]({item.image})\n\n"
             f"**Ingredients:** {escape(', '.join(item.ingredients))}\n\n"
             f"**Menu classification:** {dietary}\n\n"
-            f"**Allergens:** {escape(', '.join(item.allergens) or 'None listed')}\n\n"
             + ("**Why it fits:** " + escape(". ".join(dict.fromkeys(reasons))) if reasons else "")
         )
     if active.allergens and selection.item_ids:
-        lines.append(ALLERGEN_QUALIFICATION)
+        lines.append(INGREDIENT_QUALIFICATION)
     return "\n\n".join(lines)
 
 

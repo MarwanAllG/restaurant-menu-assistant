@@ -44,6 +44,11 @@ ingredient affinities coexist by subject. 'I like Indian food now' adds cuisine/
 'I don't like mushrooms anymore' changes ingredient/mushroom to dislike only. Use singular
 ingredient subjects. Values: affinity like/dislike, diet required, allergy avoid, spice 0..3,
 budget numeric string. Own enduring allergy is persistent; a friend's allergy is temporary.
+Preserve the named allergy ingredient (e.g. peanuts -> peanut, eggs -> egg); do not invent
+allergen labels or ingredients. Allergy filtering checks listed ingredient names only.
+A broad group like dairy/nuts that has not been clarified is an unresolved hard requirement:
+keep the stated allergy and add temporary.unsupported asking which ingredients to exclude.
+Clear that unsupported entry once the user clarifies the ingredients.
 Explicit correction/forgetting removes only the named dimension/subject. Forget-all requires
 forget_evidence quoted exactly; do not also add changes. Remove saved budget with a budget
 remove change. Do not silently remove saved allergies or diets for a temporary request.
@@ -58,6 +63,8 @@ Lists add entries; replacement clears the field before adding. Null scalars are 
 Explicit relaxation uses clear_fields; dietary patch flags are true/null, not false.
 Use supplied menu_categories verbatim ('a main' means Mains). Spice 0 none,1 mild,2 medium,3 hot.
 'I prefer mild' is saved soft preference; 'must be mild tonight' is temporary max_spice=1.
+'Something spicy' alone does not set max_spice or a saved numeric spice preference.
+'I did not say my spice limit is 3' clears temporary max_spice via clear_fields; it sets no new limit.
 'Under 30' means 29.99; 'up to 30' means 30. Budgets are SAR per dish only.
 
 Do not guess ambiguous currencies, total/group budgets, unsupported diets, calorie limits or

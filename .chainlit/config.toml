@@ -32,6 +32,7 @@ default_sidebar_state = "open"
 cot = "hidden"
 confirm_new_chat = false
 custom_css = "/public/theme.css"
+custom_js = "/public/preferences.js"
 
 [meta]
 generated_by = "2.12.0"
