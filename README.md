@@ -36,7 +36,6 @@ hashes and an authentication secret to the ignored `.env`. Set `OPENROUTER_API_K
 in that file. The default model is `deepseek/deepseek-v4.1-flash` through OpenRouter.
 
 ```sh
-uv run --no-dev python main.py
 DEBUG=false uv run --no-dev python -m chainlit run app.py --host 127.0.0.1 --port 8000
 ```
 
@@ -65,24 +64,22 @@ constraints while preserving saved preferences.
 | `core/data_layer.py` | Ownership-checked Chainlit history from saved checkpoints |
 | `core/auth.py` | PBKDF2 password hashing and verification |
 | `core/config.py` | Environment configuration |
-| `main.py` | Startup/storage/menu check without a model call |
 | `scripts/configure_accounts.py` | Private account setup |
 | `.chainlit/`, `public/` | Interface configuration, translations and visual assets |
 
 ## Deployment
 
-Use the included `render.yaml` for a single Python instance with a persistent disk,
-or build the supplied Docker image. Configure API/authentication secrets in the
-hosting service, not in Git. The application requires WebSocket support and durable
-storage for both SQLite databases under `DATA_DIR`.
-
-See [deployment instructions](docs/DEPLOYMENT.md), [architecture](docs/ARCHITECTURE.md),
-and [menu schema](docs/MENU_SCHEMA.md). [Menu data notes](MENU_DATA_NOTES.md) explain
-the fictional pricing and editorial annotations.
+Build the supplied Docker image and configure the hosting service to route traffic
+to port 8000. Run one instance with a writable persistent volume mounted at `/data`.
+Configure `OPENROUTER_API_KEY`, `TEST_ACCOUNTS_JSON` and a stable
+`CHAINLIT_AUTH_SECRET` through the hosting service. Set `APP_URL` to the deployed
+HTTPS origin and `CHAINLIT_COOKIE_SAMESITE=none` for HTTPS deployment.
+The application requires WebSocket support and durable storage for both SQLite
+databases under `DATA_DIR` (the Docker image defaults to `/data`).
 
 ## Scope
 
-The public repository contains the runtime, setup utility and deployment documentation.
+The public repository contains the runtime, setup utility and Docker deployment files.
 Notebooks, test suites, raw recipe backups, local databases and credentials are omitted.
 
 This is a demo menu: prices and annotations are fictional. Filtering uses the

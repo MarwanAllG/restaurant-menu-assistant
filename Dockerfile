@@ -5,12 +5,12 @@ WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy PYTHONUNBUFFERED=1 DATA_DIR=/data
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
-COPY app.py main.py chainlit.md menu.json MENU_DATA_NOTES.md ./
+COPY app.py chainlit.md menu.json ./
 COPY core ./core
 COPY public ./public
 COPY .chainlit/config.toml ./.chainlit/config.toml
 COPY .chainlit/translations/en-US.json ./.chainlit/translations/en-US.json
-# The runtime has no .env or credentials baked in. Render mounts /data.
+# Mount persistent storage at /data; configure secrets through environment variables.
 RUN useradd --create-home --uid 10001 app && mkdir -p /data && chown -R app:app /app /data
 USER app
 EXPOSE 8000
