@@ -1,0 +1,46 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets and persistent local state
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+*.db-*
+*.sqlite-*
+*.sqlite3-*
+data/
+.chainlit/translations/
+.chainlit/.files/
+.files/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.log
+.DS_Store
+
+!.chainlit/translations/
+.chainlit/translations/*
+!.chainlit/translations/en-US.json
+
+# Local development and source-preparation materials (not part of the public app)
+tests/
+*.ipynb
+*.pdf
+recipes.json
+recipes_original.json
+scripts/demo.py
+scripts/prepare_menu.py
+scripts/check_provider.py
+docs/VALIDATION.md

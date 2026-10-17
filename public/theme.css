@@ -1,0 +1,44 @@
+:root, .light {
+  --background: 270 40% 99%;
+  --foreground: 270 24% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 270 24% 16%;
+  --primary: 270 62% 43%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 270 42% 95%;
+  --secondary-foreground: 270 55% 30%;
+  --accent: 270 45% 94%;
+  --accent-foreground: 270 60% 30%;
+  --muted: 270 30% 96%;
+  --muted-foreground: 270 12% 42%;
+  --border: 270 25% 89%;
+  --ring: 270 62% 43%;
+  --radius: 0.8rem;
+}
+.dark {
+  --primary: 270 70% 72%;
+  --primary-foreground: 270 45% 12%;
+  --ring: 270 70% 72%;
+}
+#header { border-bottom: 1px solid hsl(var(--border)); }
+.markdown-body h3, .prose h3 {
+  color: hsl(var(--primary));
+  border-top: 1px solid hsl(var(--border));
+  padding-top: 1.1rem;
+  margin-top: 1.4rem;
+}
+.markdown-body img, .prose img {
+  max-height: 220px;
+  max-width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+}
+:root, .light {
+  --sidebar-background: 270 45% 97%;
+  --sidebar-accent: 270 45% 92%;
+  --sidebar-primary: 270 62% 43%;
+}
+#readme-button, #theme-toggle { display: none; }
+#new-chat-button { color: #6b2ba0; }
+/* Chainlit renders menu cards as canonical Markdown so history restores them exactly. */
+.step img { max-width: 320px; max-height: 220px; border-radius: 12px; object-fit: cover; }
